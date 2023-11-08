@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DemoWebApi.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Net.NetworkInformation;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using DemoWebApi.Data;
 using Microsoft.Build.Execution;
@@ -17,7 +21,19 @@ namespace DemoWebApi
 
             builder.Services.AddControllers();
 
-            
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
 
             var app = builder.Build();
 
@@ -26,6 +42,8 @@ namespace DemoWebApi
             app.UseAuthorization();
 
             IWebHostEnvironment _env = app.Services.GetRequiredService<IWebHostEnvironment>();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.MapControllers();
 
