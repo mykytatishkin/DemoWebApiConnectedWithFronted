@@ -38,20 +38,21 @@ namespace DemoWebApi.Controllers
 
         // GET: api/Pictures/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Picture>> GetPicture(int id)
+        public async Task<ActionResult<List<Picture>>> GetPicture(int id)
         {
           if (_context.Picture == null)
           {
               return NotFound();
           }
-            var picture = await _context.Picture.FindAsync(id);
+            var pictures = await _context.Picture.Where(p => p.BookId == id).ToListAsync();
 
-            if (picture == null)
+
+            if (pictures == null)
             {
                 return NotFound();
             }
 
-            return picture;
+            return pictures;
         }
 
         // PUT: api/Pictures/5
@@ -103,7 +104,7 @@ namespace DemoWebApi.Controllers
             }
 
             //2. set picture.ImageUrl = path to the directory images
-            picture.ImageUrl = "/images/" + fileName;
+            //picture.ImageUrl = "/images/" + fileName;
             _context.Picture.Add(picture);
             await _context.SaveChangesAsync();
 
